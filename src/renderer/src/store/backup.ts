@@ -4,6 +4,7 @@ export interface WebDAVSyncState {
   lastSyncTime: number | null
   syncing: boolean
   lastSyncError: string | null
+  lastSyncVersion: string | null
 }
 
 export interface BackupState {
@@ -14,7 +15,8 @@ const initialState: BackupState = {
   webdavSync: {
     lastSyncTime: null,
     syncing: false,
-    lastSyncError: null
+    lastSyncError: null,
+    lastSyncVersion: null
   }
 }
 

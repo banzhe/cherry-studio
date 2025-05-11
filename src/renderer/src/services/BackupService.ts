@@ -60,6 +60,62 @@ export async function reset() {
   })
 }
 
+export async function autoSyncWebdav() {
+  const { version, filename } = await getWebdavBackupVersion()
+  const { webdavSync } = store.getState().backup
+  Logger.log(`[AutoSync] WebDAV backup version: ${version}, filename: ${filename}`)
+  Logger.log(`[AutoSync] WebDAV last sync version: ${webdavSync.lastSyncVersion}`)
+
+  if (version !== webdavSync.lastSyncVersion) {
+    Logger.log(`[AutoSync] Restore from WebDAV backup file: ${filename}`)
+    store.dispatch(setWebDAVSyncState({ lastSyncError: null, lastSyncVersion: version }))
+    await restoreFromWebdav(filename)
+  } else {
+    Logger.log(`[AutoSync] Backup to WebDAV`)
+    await backupToWebdav({ autoBackupProcess: true })
+  }
+}
+
+async function getWebdavBackupVersion(): Promise<{
+  version: string
+  filename: string
+}> {
+  const { webdavHost, webdavUser, webdavPass, webdavPath } = store.getState().settings
+  // 获取所有备份文件
+  const files = await window.api.backup.listWebdavFiles({
+    webdavHost,
+    webdavUser,
+    webdavPass,
+    webdavPath
+  })
+
+  // 筛选当前设备的备份文件
+  const currentDeviceFiles = files
+
+  // 获取所有备份文件中 version 最大的一个
+  const maxVersion = currentDeviceFiles.reduce(
+    (max, file) => {
+      const version = parseInt(file.fileName.split('.')[1])
+      if (version > max.version) {
+        return {
+          version,
+          filename: file.fileName
+        }
+      }
+      return max
+    },
+    {
+      version: 0,
+      filename: ''
+    }
+  )
+
+  return {
+    version: maxVersion.version.toString(),
+    filename: maxVersion.filename
+  }
+}
+
 // 备份到 webdav
 /**
  * @param autoBackupProcess
@@ -107,9 +163,11 @@ export async function backupToWebdav({
       fileName: finalFileName
     })
     if (success) {
+      Logger.log(`[Backup] Backup to WebDAV success, version: ${timestamp}`)
       store.dispatch(
         setWebDAVSyncState({
-          lastSyncError: null
+          lastSyncError: null,
+          lastSyncVersion: timestamp
         })
       )
       if (showMessage && !autoBackupProcess) {

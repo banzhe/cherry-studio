@@ -8,13 +8,14 @@ import { modelGenerating } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
 import { useShowAssistants, useShowTopics } from '@renderer/hooks/useStore'
+import { useWebDavAutoSync } from '@renderer/hooks/useWebdavAutoSync'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { useAppDispatch } from '@renderer/store'
 import { setNarrowMode } from '@renderer/store/settings'
 import { Assistant, Topic } from '@renderer/types'
 import { Tooltip } from 'antd'
 import { t } from 'i18next'
-import { LayoutGrid, MessageSquareDiff, PanelLeftClose, PanelRightClose, Search } from 'lucide-react'
+import { Cloud, LayoutGrid, Loader2, MessageSquareDiff, PanelLeftClose, PanelRightClose, Search } from 'lucide-react'
 import { FC } from 'react'
 import styled from 'styled-components'
 
@@ -55,6 +56,8 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant }) => {
     dispatch(setNarrowMode(!narrowMode))
   }
 
+  const { syncing, run: runWebdavAutoSync } = useWebDavAutoSync()
+
   return (
     <Navbar className="home-navbar">
       {showAssistants && (
@@ -86,6 +89,9 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant }) => {
         </HStack>
         <HStack alignItems="center" gap={8}>
           <UpdateAppButton />
+          <Tooltip title={syncing ? '同步中...' : '自动同步'} mouseEnterDelay={0.8}>
+            <NarrowIcon onClick={runWebdavAutoSync}>{syncing ? <Loader2 size={18} /> : <Cloud size={18} />}</NarrowIcon>
+          </Tooltip>
           <Tooltip title={t('chat.assistant.search.placeholder')} mouseEnterDelay={0.8}>
             <NarrowIcon onClick={() => SearchPopup.show()}>
               <Search size={18} />
