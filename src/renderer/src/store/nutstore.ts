@@ -20,7 +20,8 @@ const initialState: NutstoreState = {
   nutstoreSyncState: {
     lastSyncTime: null,
     syncing: false,
-    lastSyncError: null
+    lastSyncError: null,
+    lastSyncVersion: null
   }
 }
 

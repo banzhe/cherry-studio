@@ -1067,7 +1067,8 @@ const migrateConfig = {
           webdavSync: {
             lastSyncTime: runtimeState.webdavSync.lastSyncTime || null,
             syncing: runtimeState.webdavSync.syncing || false,
-            lastSyncError: runtimeState.webdavSync.lastSyncError || null
+            lastSyncError: runtimeState.webdavSync.lastSyncError || null,
+            lastSyncVersion: runtimeState.webdavSync.lastSyncVersion || null
           }
         }
         delete runtimeState.webdavSync
