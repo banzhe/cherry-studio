@@ -44,6 +44,9 @@
       "my_agents": "My Agents",
       "search.no_results": "No results found",
       "sorting.title": "Sorting",
+      "settings": {
+        "title": "Agent Setting"
+      },
       "tag.agent": "Agent",
       "tag.default": "Default",
       "tag.new": "New",
@@ -489,7 +492,7 @@
       "threshold_tooltip": "Used to evaluate the relevance between the user's question and the content in the knowledge base (0-1)",
       "title": "Knowledge Base",
       "topN": "Number of results returned",
-      "topN__too_large_or_small": "The number of results returned cannot be greater than 100 or less than 1.",
+      "topN_too_large_or_small": "The number of results returned cannot be greater than 30 or less than 1.",
       "topN_placeholder": "Not set",
       "topN_tooltip": "The number of matching results returned; the larger the value, the more matching results, but also the more tokens consumed.",
       "url_added": "URL added",
@@ -773,6 +776,8 @@
       "proxy_required": "Currently, you need to open a proxy to view the generated images, it will be supported in the future",
       "image_file_required": "Please upload an image first",
       "image_file_retry": "Please re-upload an image first",
+      "image_placeholder": "No image available",
+      "image_retry": "Retry",
       "mode": {
         "generate": "Draw",
         "edit": "Edit",
@@ -903,6 +908,8 @@
       "about.checkUpdate.available": "Update",
       "about.contact.button": "Email",
       "about.contact.title": "Contact",
+      "about.debug.title": "Debug",
+      "about.debug.open": "Open",
       "about.description": "A powerful AI assistant for producer",
       "about.downloading": "Downloading...",
       "about.feedback.button": "Feedback",
@@ -1146,7 +1153,7 @@
       "miniapps": {
         "title": "Mini Apps Settings",
         "custom": {
-          "title": "Custom Mini App",
+          "title": "Custom",
           "edit_title": "Edit Custom Mini App",
           "save_success": "Custom mini app saved successfully.",
           "save_error": "Failed to save custom mini app.",
@@ -1386,6 +1393,7 @@
       "models.add.group_name.tooltip": "Optional e.g. ChatGPT",
       "models.add.model_id": "Model ID",
       "models.add.model_id.placeholder": "Required e.g. gpt-3.5-turbo",
+      "models.add.model_id.select.placeholder": "Select Model",
       "models.add.model_id.tooltip": "Example: gpt-3.5-turbo",
       "models.add.model_name": "Model Name",
       "models.add.model_name.placeholder": "Optional e.g. GPT-4",
@@ -1617,6 +1625,10 @@
       "privacy": {
         "title": "Privacy Settings",
         "enable_privacy_mode": "Anonymous reporting of errors and statistics"
+      },
+      "zoom": {
+        "title": "Page Zoom",
+        "reset": "Reset"
       }
     },
     "translate": {
