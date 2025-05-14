@@ -70,6 +70,7 @@ export async function autoSyncWebdav() {
     Logger.log(`[AutoSync] Restore from WebDAV backup file: ${filename}`)
     await restoreFromWebdav(filename)
     store.dispatch(setWebDAVSyncState({ lastSyncError: null, lastSyncVersion: version }))
+    await backupToWebdav({ autoBackupProcess: true })
   } else {
     Logger.log(`[AutoSync] Backup to WebDAV`)
     await backupToWebdav({ autoBackupProcess: true })
@@ -116,6 +117,12 @@ async function getWebdavBackupVersion(): Promise<{
   }
 }
 
+export async function areWebdavVersionsSame() {
+  const { version } = await getWebdavBackupVersion()
+  const { webdavSync } = store.getState().backup
+  return version === webdavSync.lastSyncVersion
+}
+
 // 备份到 webdav
 /**
  * @param autoBackupProcess
@@ -130,6 +137,11 @@ export async function backupToWebdav({
     Logger.log('[Backup] Manual backup already in progress')
     return
   }
+  if (autoBackupProcess && !areWebdavVersionsSame()) {
+    Logger.log('[Backup] Auto backup process, but webdav version is not same, skip backup')
+    return
+  }
+
   // force set showMessage to false when auto backup process
   if (autoBackupProcess) {
     showMessage = false
