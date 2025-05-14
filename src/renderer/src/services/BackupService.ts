@@ -68,8 +68,8 @@ export async function autoSyncWebdav() {
 
   if (version !== webdavSync.lastSyncVersion) {
     Logger.log(`[AutoSync] Restore from WebDAV backup file: ${filename}`)
-    store.dispatch(setWebDAVSyncState({ lastSyncError: null, lastSyncVersion: version }))
     await restoreFromWebdav(filename)
+    store.dispatch(setWebDAVSyncState({ lastSyncError: null, lastSyncVersion: version }))
   } else {
     Logger.log(`[AutoSync] Backup to WebDAV`)
     await backupToWebdav({ autoBackupProcess: true })
