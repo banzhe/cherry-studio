@@ -173,7 +173,6 @@ export async function backupToWebdav({
       webdavPath,
       fileName: finalFileName
     })
-    Logger.log(`[Backup] Backup to WebDAV success, version123: ${timestamp}`)
     if (success) {
       Logger.log(`[Backup] Backup to WebDAV success, version: ${timestamp}`)
       store.dispatch(
