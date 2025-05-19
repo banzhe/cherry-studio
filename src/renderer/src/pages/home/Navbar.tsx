@@ -1,8 +1,11 @@
+import { FolderOpenOutlined, SaveOutlined } from '@ant-design/icons'
 import { Navbar, NavbarLeft, NavbarRight } from '@renderer/components/app/Navbar'
 import { HStack } from '@renderer/components/Layout'
 import FloatingSidebar from '@renderer/components/Popups/FloatingSidebar'
 import MinAppsPopover from '@renderer/components/Popups/MinAppsPopover'
 import SearchPopup from '@renderer/components/Popups/SearchPopup'
+import { WebdavBackupManager } from '@renderer/components/WebdavBackupManager'
+import { useWebdavBackupModal, WebdavBackupModal } from '@renderer/components/WebdavModals'
 import { isMac } from '@renderer/config/constant'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { modelGenerating } from '@renderer/hooks/useRuntime'
@@ -30,6 +33,46 @@ interface Props {
   position: 'left' | 'right'
 }
 
+export const NavbarIcon = styled.div`
+  -webkit-app-region: none;
+  border-radius: 8px;
+  height: 30px;
+  padding: 0 7px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  .iconfont {
+    font-size: 18px;
+    color: var(--color-icon);
+    &.icon-a-addchat {
+      font-size: 20px;
+    }
+    &.icon-a-darkmode {
+      font-size: 20px;
+    }
+    &.icon-appstore {
+      font-size: 20px;
+    }
+  }
+  .anticon {
+    color: var(--color-icon);
+    font-size: 16px;
+  }
+  &:hover {
+    background-color: var(--color-background-mute);
+    color: var(--color-icon-white);
+  }
+`
+
+const NarrowIcon = styled(NavbarIcon)`
+  @media (max-width: 1000px) {
+    display: none;
+  }
+`
+
 const HeaderNavbar: FC<Props> = ({ activeAssistant, setActiveAssistant, activeTopic, setActiveTopic }) => {
   const { assistant } = useAssistant(activeAssistant.id)
   const { showAssistants, toggleShowAssistants } = useShowAssistants()
@@ -37,6 +80,14 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant, setActiveAssistant, activeTo
   const { showTopics, toggleShowTopics } = useShowTopics()
   const dispatch = useAppDispatch()
   const [sidebarHideCooldown, setSidebarHideCooldown] = useState(false)
+  const settings = useSettings()
+  const webdavHost = settings.webdavHost
+  const webdavUser = settings.webdavUser
+  const webdavPass = settings.webdavPass
+  const webdavPath = settings.webdavPath
+  const [backupManagerVisible, setBackupManagerVisible] = useState(false)
+  const { isModalVisible, handleBackup, handleCancel, backuping, customFileName, setCustomFileName, showBackupModal } =
+    useWebdavBackupModal()
 
   // Function to toggle assistants with cooldown
   const handleToggleShowAssistants = useCallback(() => {
@@ -84,6 +135,9 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant, setActiveAssistant, activeTo
     await modelGenerating()
     dispatch(setNarrowMode(!narrowMode))
   }
+
+  const showBackupManager = () => setBackupManagerVisible(true)
+  const closeBackupManager = () => setBackupManagerVisible(false)
 
   return (
     <Navbar className="home-navbar">
@@ -133,6 +187,21 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant, setActiveAssistant, activeTo
         </HStack>
         <HStack alignItems="center" gap={8}>
           <UpdateAppButton />
+          {/* WebDAV Backup/Restore Buttons */}
+          {webdavHost && webdavUser && webdavPass && webdavPath && (
+            <>
+              <Tooltip title={t('settings.data.webdav.backup.button')} mouseEnterDelay={0.8}>
+                <NarrowIcon onClick={showBackupModal}>
+                  <SaveOutlined />
+                </NarrowIcon>
+              </Tooltip>
+              <Tooltip title={t('settings.data.webdav.restore.button')} mouseEnterDelay={0.8}>
+                <NarrowIcon onClick={showBackupManager}>
+                  <FolderOpenOutlined />
+                </NarrowIcon>
+              </Tooltip>
+            </>
+          )}
           <Tooltip title={t('chat.assistant.search.placeholder')} mouseEnterDelay={0.8}>
             <NarrowIcon onClick={() => SearchPopup.show()}>
               <Search size={18} />
@@ -181,49 +250,28 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant, setActiveAssistant, activeTo
             </Tooltip>
           )}
         </HStack>
+        {/* WebDAV Modals */}
+        <WebdavBackupModal
+          isModalVisible={isModalVisible}
+          handleBackup={handleBackup}
+          handleCancel={handleCancel}
+          backuping={backuping}
+          customFileName={customFileName}
+          setCustomFileName={setCustomFileName}
+        />
+        <WebdavBackupManager
+          visible={backupManagerVisible}
+          onClose={closeBackupManager}
+          webdavConfig={{
+            webdavHost,
+            webdavUser,
+            webdavPass,
+            webdavPath
+          }}
+        />
       </NavbarRight>
     </Navbar>
   )
 }
-
-export const NavbarIcon = styled.div`
-  -webkit-app-region: none;
-  border-radius: 8px;
-  height: 30px;
-  padding: 0 7px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  .iconfont {
-    font-size: 18px;
-    color: var(--color-icon);
-    &.icon-a-addchat {
-      font-size: 20px;
-    }
-    &.icon-a-darkmode {
-      font-size: 20px;
-    }
-    &.icon-appstore {
-      font-size: 20px;
-    }
-  }
-  .anticon {
-    color: var(--color-icon);
-    font-size: 16px;
-  }
-  &:hover {
-    background-color: var(--color-background-mute);
-    color: var(--color-icon-white);
-  }
-`
-
-const NarrowIcon = styled(NavbarIcon)`
-  @media (max-width: 1000px) {
-    display: none;
-  }
-`
 
 export default HeaderNavbar
